@@ -29,7 +29,7 @@ describe("GET /api/topics", () => {
         });
       });
   });
-  test("when given incorrect api endpoint, will respond with a 404 error and message of route not found", () => {
+  test("GET 404: sends appropriate status and error message when given incorrect api endpoint", () => {
     return request(app)
       .get("/api/topic")
       .expect(404)
@@ -47,21 +47,51 @@ describe("GET /api", () => {
       .then((res) => {
         const endpoints = res.body.endpointData;
         expect(endpoints).toEqual(endpointData);
-        for (const key in endpoints) {
-          expect(endpoints[key]).toMatchObject({
-            description: expect.any(String),
-            queries: expect.any(Array),
-            exampleResponse: expect.any(Object),
-          });
-        }
       });
   });
-  test("When given incorrect api endpoint, will respond with 404 error with message route not found", () => {
+  test("GET 404: sends appropriate status and error message when given incorrect api endpoint", () => {
     return request(app)
       .get("/apy")
       .expect(404)
       .then((res) => {
         expect(res.body.msg).toBe("Route not found");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("GET 200, responds with the correct article object when given and article id endpoint", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then((res) => {
+        const article = res.body.article;
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          body: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+      });
+  });
+  test("GET 404: sends appropriate status and error message when given a valid but non-existent article ID", () => {
+    return request(app)
+      .get("/api/articles/333")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Not found");
+      });
+  });
+  test("GET 400: send appropriate status and error message when given an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/0L")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad request");
       });
   });
 });

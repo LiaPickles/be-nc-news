@@ -1,8 +1,6 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api",
-    "queries": [],
-    "exampleResponse": {}
+    "description": "serves up a json representation of all the available endpoints of the api"
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
@@ -27,5 +25,23 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object of specific requested article",
+    "queries": ["sort_by", "order"],
+    "exampleResponse": {
+      "article": {
+      "article_id": 3,
+      "title": "Eight pug gifs that remind me of mitch",
+      "topic": "mitch",
+      "author": "icellusedkars",
+      "body": "some gifs",
+      "created_at": "2020-11-03T09:12:00.000Z",
+      "votes": 0,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
   }
-}
+ }
+ }
+  
+
