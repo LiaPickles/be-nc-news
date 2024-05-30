@@ -43,4 +43,38 @@ const selectArticleComments = (articleId) => {
     });
 };
 
-module.exports = { selectArticles, selectArticlesById, selectArticleComments };
+const checkUserExists = (username) => {
+  return db
+    .query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "Not found",
+        });
+      }
+      return rows[0];
+    });
+};
+
+const createComment = (articleId, commentObj) => {
+  const { username, body } = commentObj;
+  return db
+    .query(
+      `INSERT INTO comments (body, article_id, author)
+      VALUES ($1, $2, $3)
+      RETURNING body`,
+      [body, articleId, username]
+    )
+    .then((result) => {
+      return result.rows[0].body;
+    });
+};
+
+module.exports = {
+  selectArticles,
+  selectArticlesById,
+  selectArticleComments,
+  checkUserExists,
+  createComment,
+};
