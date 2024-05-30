@@ -181,3 +181,71 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST 201: when given appropriate username and body, will respond with comment body", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "great article!",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toBe("great article!");
+      });
+  });
+  test("POST 400: when given no comment body, will respond with correct error message", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Incorrect username or no comment");
+      });
+  });
+  test("POST 400: when invalid username given, will respond with correct error message", () => {
+    const newComment = {
+      username: "",
+      body: "awful article!",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Incorrect username or no comment");
+      });
+  });
+  test("POST 400: when given an invalid article_id will respond with correct error message", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "great article!",
+    };
+    return request(app)
+      .post("/api/articles/0L/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST 404: when given an invalid article_id will respond with correct error message", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "great article!",
+    };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});

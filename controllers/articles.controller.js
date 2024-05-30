@@ -2,6 +2,8 @@ const {
   selectArticles,
   selectArticlesById,
   selectArticleComments,
+  checkUserExists,
+  createComment,
 } = require("../models/articles.model");
 
 const getArticles = (req, res, next) => {
@@ -37,4 +39,33 @@ const getArticleComments = (req, res, next) => {
     });
 };
 
-module.exports = { getArticles, getArticlesById, getArticleComments };
+const postArticleComment = (req, res, next) => {
+  const articleId = req.params.article_id;
+  const username = req.body.username;
+  const commentObj = req.body;
+  const commentBody = req.body.body;
+  if (username && commentBody) {
+    checkUserExists(username)
+      .then(() => {
+        return selectArticlesById(articleId);
+      })
+      .then(() => {
+        return createComment(articleId, commentObj);
+      })
+      .then((comment) => {
+        return res.status(201).send({ comment });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
+    res.status(400).send({ msg: "Incorrect username or no comment" });
+  }
+};
+
+module.exports = {
+  getArticles,
+  getArticlesById,
+  getArticleComments,
+  postArticleComment,
+};
