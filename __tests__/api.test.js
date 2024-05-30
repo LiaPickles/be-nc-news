@@ -302,4 +302,31 @@ describe("PATCH 200, /api/articles/:article_id", () => {
         expect(body.msg).toBe("Not found");
       });
   });
+
+  describe("DELETE /api/comments/:comment_id", () => {
+    test("DELETE 204: will return correct error message and no body when given valid comment id", () => {
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(({ body }) => {
+          expect(body).toEqual({});
+        });
+    });
+  });
+  test("DELETE 400: will return correct error message if given invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/XX")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("DELETE 404: will return correct error message if given invalid comment id", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found");
+      });
+  });
 });
