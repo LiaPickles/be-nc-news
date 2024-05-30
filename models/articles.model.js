@@ -70,6 +70,36 @@ const createComment = (articleId, commentObj) => {
       return result.rows[0].body;
     });
 };
+const selectArticleVotes = (articleId) => {
+  return db
+    .query(
+      `SELECT votes FROM articles
+  WHERE article_id = $1`,
+      [articleId]
+    )
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "Not found",
+        });
+      }
+      return rows[0];
+    });
+};
+const updateArticleVotes = (updatedVotes, articleId) => {
+  return db
+    .query(
+      `UPDATE articles
+      SET votes = $1
+      WHERE article_id = $2
+      RETURNING *`,
+      [updatedVotes, articleId]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};
 
 module.exports = {
   selectArticles,
@@ -77,4 +107,6 @@ module.exports = {
   selectArticleComments,
   checkUserExists,
   createComment,
+  selectArticleVotes,
+  updateArticleVotes,
 };
