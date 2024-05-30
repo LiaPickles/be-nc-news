@@ -4,6 +4,7 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const app = require("../app");
 const endpointData = require("../endpoints.json");
+const jestSorted = require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -121,6 +122,59 @@ describe("GET /api/articles/:article_id", () => {
   test("GET 400: send appropriate status and error message when given an invalid article id", () => {
     return request(app)
       .get("/api/articles/0L")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("GET 200: responds with array of comments for given article", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(2);
+        body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("GET 200: responds with array of comments ordered by most recent first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET 200: responds with an empty array when requested an article with no comments", () => {
+    return request(app)
+      .get("/api/articles/7/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual([]);
+      });
+  });
+  test("GET 404: sends appropriate status and error message when given a valid but non-existent article ID", () => {
+    return request(app)
+      .get("/api/articles/333/comments")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Not found");
+      });
+  });
+  test("GET 400: send appropriate status and error message when given an invalid article id", () => {
+    return request(app)
+      .get("/api/articles/0L/comments")
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe("Bad request");
