@@ -249,3 +249,57 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("PATCH 200, /api/articles/:article_id", () => {
+  test("when given appropriate votes object, will respond with updated article", () => {
+    const votes = { inc_votes: 5 };
+
+    return request(app)
+      .patch("/api/articles/7")
+      .send(votes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "icellusedkars",
+          title: "Z",
+          article_id: 7,
+          topic: "mitch",
+          body: "I was hungry.",
+          created_at: "2020-01-07T14:08:00.000Z",
+          votes: 5,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 400: will return correct error message when given invalid votes object", () => {
+    const votes = { inc_votes: "X" };
+    return request(app)
+      .patch("/api/articles/7")
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH 400: will return correct error message when given invalid article id", () => {
+    const votes = { inc_votes: 7 };
+    return request(app)
+      .patch("/api/articles/XX")
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH 404: will return correct error message when given invalid article id", () => {
+    const votes = { inc_votes: 7 };
+    return request(app)
+      .patch("/api/articles/999")
+      .send(votes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});

@@ -46,5 +46,21 @@
     "description": "posts a new comment to an article and return the comment",
     "queries": [],
     "exampleResponse": { "comment": "Great article!" }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the votes on an article",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "author": "icellusedkars",
+        "title": "Z",
+        "article_id": 7,
+        "topic": "mitch",
+        "body": "I was hungry.",
+        "created_at": "2020-01-07T14:08:00.000Z",
+        "votes": 5,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }

@@ -4,6 +4,8 @@ const {
   selectArticleComments,
   checkUserExists,
   createComment,
+  selectArticleVotes,
+  updateArticleVotes,
 } = require("../models/articles.model");
 
 const getArticles = (req, res, next) => {
@@ -63,9 +65,29 @@ const postArticleComment = (req, res, next) => {
   }
 };
 
+const patchArticleVotes = (req, res, next) => {
+  const articleId = req.params.article_id;
+  const newVotes = req.body.inc_votes;
+  selectArticleVotes(articleId)
+    .then((votes) => {
+      const oldVotes = votes.votes;
+      return oldVotes + newVotes;
+    })
+    .then((updatedVotes) => {
+      return updateArticleVotes(updatedVotes, articleId);
+    })
+    .then((article) => {
+      return res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 module.exports = {
   getArticles,
   getArticlesById,
   getArticleComments,
   postArticleComment,
+  patchArticleVotes,
 };
