@@ -5,10 +5,10 @@ const {
   getArticlesById,
   getArticleComments,
   postArticleComment,
-  patchArticleVotes
+  patchArticleVotes,
 } = require("./controllers/articles.controller");
-const { deleteCommentById } = require("./controllers/comments.controller")
-const { getUsers } = require("./controllers/users.controller")
+const { deleteCommentById } = require("./controllers/comments.controller");
+const { getUsers } = require("./controllers/users.controller");
 
 const express = require("express");
 const app = express();
@@ -27,11 +27,11 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
 
-app.patch("/api/articles/:article_id", patchArticleVotes)
+app.patch("/api/articles/:article_id", patchArticleVotes);
 
-app.delete("/api/comments/:comment_id", deleteCommentById)
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
-app.get("/api/users", getUsers)
+app.get("/api/users", getUsers);
 
 app.use((err, req, res, next) => {
   if (err.code) {
