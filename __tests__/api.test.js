@@ -303,6 +303,28 @@ describe("PATCH 200, /api/articles/:article_id", () => {
       });
   });
 
+  describe("GET /api/articles?topics=:topic", () => {
+    test("GET 200: responds with articles filtered by given topic", () => {
+      return request(app)
+        .get("/api/articles?topics=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).toBe(12);
+          body.articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+          });
+        });
+    });
+    test("GET 404: responds with correct error message when incorrect topic is queried", () => {
+      return request(app)
+        .get("/api/articles?topics=flowers")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Topic not found");
+        });
+    });
+  });
+
   describe("DELETE /api/comments/:comment_id", () => {
     test("DELETE 204: will return correct error message and no body when given valid comment id", () => {
       return request(app)

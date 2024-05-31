@@ -9,9 +9,18 @@ const {
 } = require("../models/articles.model");
 
 const getArticles = (req, res, next) => {
-  selectArticles().then((articles) => {
-    return res.status(200).send({ articles });
-  });
+  const topicQuery = req.query.topics;
+  selectArticles(topicQuery)
+    .then((articles) => {
+      if (!articles.length) {
+        return res.status(404).send({ msg: "Topic not found" });
+      } else {
+        return res.status(200).send({ articles });
+      }
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const getArticlesById = (req, res, next) => {
