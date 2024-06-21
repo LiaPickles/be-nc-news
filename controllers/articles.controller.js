@@ -10,7 +10,10 @@ const {
 
 const getArticles = (req, res, next) => {
   const topicQuery = req.query.topics;
-  selectArticles(topicQuery)
+  const sortBy = req.query.sort_by
+  const orderBy = req.query.order
+  console.log(req.query)
+  selectArticles(topicQuery, sortBy, orderBy)
     .then((articles) => {
       if (!articles.length) {
         return res.status(404).send({ msg: "Topic not found" });

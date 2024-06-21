@@ -90,6 +90,22 @@ describe("GET /api/articles", () => {
         expect(res.body.msg).toBe("Route not found");
       });
   });
+  test("GET 200: will return the articles sorted by created at in descending order by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+test.only("GET 200: will return the articles sorted by any valid column in default descending order", () => {
+  return request(app)
+    .get("/api/articles?sort_by=votes&order=asc")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles).toBeSortedBy("votes", { descending: false });
+    });
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -129,23 +145,23 @@ describe("GET /api/articles/:article_id", () => {
   });
   test("GET 200: article response object should now also include comment_count", () => {
     return request(app)
-    .get("/api/articles/3")
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.article).toMatchObject({
-        author: 'icellusedkars',
-        title: 'Eight pug gifs that remind me of mitch',
-        article_id: 3,
-        body: 'some gifs',
-        topic: 'mitch',
-        created_at: '2020-11-03T09:12:00.000Z',
-        votes: 0,
-        article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-        comment_count: "2"
-      })
-    })
-
-  })
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "icellusedkars",
+          title: "Eight pug gifs that remind me of mitch",
+          article_id: 3,
+          body: "some gifs",
+          topic: "mitch",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "2",
+        });
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -389,5 +405,3 @@ describe("GET /api/users", () => {
       });
   });
 });
-
-
