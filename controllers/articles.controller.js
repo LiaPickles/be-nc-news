@@ -12,7 +12,6 @@ const getArticles = (req, res, next) => {
   const topicQuery = req.query.topics;
   const sortBy = req.query.sort_by
   const orderBy = req.query.order
-  console.log(req.query)
   selectArticles(topicQuery, sortBy, orderBy)
     .then((articles) => {
       if (!articles.length) {

@@ -1,8 +1,5 @@
 const db = require("../db/connection");
 
-
-
-
 const selectArticles = (
   topicQuery,
   sortBy = "created_at",
@@ -35,20 +32,17 @@ const selectArticles = (
   LEFT JOIN comments ON articles.article_id = comments.article_id`;
 
   const queryValues = [];
-  console.log(queryValues);
 
   if (topicQuery !== undefined) {
     topicQuery = topicQuery.toLowerCase();
     queryString += ` WHERE articles.topic = $1`;
     queryValues.push(topicQuery);
   }
-  
+
   queryString += ` GROUP BY articles.article_id
   ORDER BY ${sortBy} ${orderBy}`;
 
-
   return db.query(queryString, queryValues).then((result) => {
-    console.log(result.rows)
     return result.rows;
   });
 };
