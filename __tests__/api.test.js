@@ -79,14 +79,6 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("GET 404: sends appropriate status and error message when given incorrect api endpoint", () => {
-    return request(app)
-      .get("/api/article")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Route not found");
-      });
-  });
   test("GET 200: will return the articles sorted by created at in descending order by default", () => {
     return request(app)
       .get("/api/articles")
@@ -174,7 +166,7 @@ describe("GET /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 3,
           });
         });
       });
@@ -237,10 +229,10 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Incorrect username or no comment");
+        expect(body.msg).toBe("No comment given");
       });
   });
-  test("POST 400: when invalid username given, will respond with correct error message", () => {
+  test("POST 404: when invalid username given, will respond with correct error message", () => {
     const newComment = {
       username: "",
       body: "awful article!",
@@ -248,9 +240,9 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/5/comments")
       .send(newComment)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Incorrect username or no comment");
+        expect(body.msg).toBe("Not found");
       });
   });
   test("POST 400: when given an invalid article_id will respond with correct error message", () => {

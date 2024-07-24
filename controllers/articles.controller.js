@@ -4,14 +4,13 @@ const {
   selectArticleComments,
   checkUserExists,
   createComment,
-  selectArticleVotes,
   updateArticleVotes,
 } = require("../models/articles.model");
 
 const getArticles = (req, res, next) => {
   const topicQuery = req.query.topics;
-  const sortBy = req.query.sort_by
-  const orderBy = req.query.order
+  const sortBy = req.query.sort_by;
+  const orderBy = req.query.order;
   selectArticles(topicQuery, sortBy, orderBy)
     .then((articles) => {
       if (!articles.length) {
@@ -39,7 +38,7 @@ const getArticlesById = (req, res, next) => {
 const getArticleComments = (req, res, next) => {
   const articleId = req.params.article_id;
   const promises = [selectArticleComments(articleId)];
-  if (articleId) {
+  {
     promises.push(selectArticlesById(articleId));
   }
 
@@ -57,7 +56,7 @@ const postArticleComment = (req, res, next) => {
   const username = req.body.username;
   const commentObj = req.body;
   const commentBody = req.body.body;
-  if (username && commentBody) {
+  if (commentBody) {
     checkUserExists(username)
       .then(() => {
         return selectArticlesById(articleId);
@@ -72,28 +71,22 @@ const postArticleComment = (req, res, next) => {
         next(err);
       });
   } else {
-    res.status(400).send({ msg: "Incorrect username or no comment" });
+    res.status(400).send({ msg: "No comment given" });
   }
 };
 
 const patchArticleVotes = (req, res, next) => {
   const articleId = req.params.article_id;
   const newVotes = req.body.inc_votes;
-  selectArticleVotes(articleId)
-    .then((votes) => {
-      const oldVotes = votes.votes;
-      return oldVotes + newVotes;
-    })
-    .then((updatedVotes) => {
-      return updateArticleVotes(updatedVotes, articleId);
-    })
-    .then((article) => {
-      return res.status(200).send({ article });
-    })
-    .catch((err) => {
-      next(err);
-    });
+  updateArticleVotes(newVotes, articleId)
+  .then((article) => {
+    return res.status(200).send({ article });
+  })
+  .catch((err) => {
+    next(err);
+  });
 };
+
 
 module.exports = {
   getArticles,
