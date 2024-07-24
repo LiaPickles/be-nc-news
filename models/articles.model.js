@@ -110,12 +110,15 @@ const createComment = (articleId, commentObj) => {
       return result.rows[0].body;
     });
 };
-const selectArticleVotes = (articleId) => {
+
+const updateArticleVotes = (newVotes, articleId) => {
   return db
     .query(
-      `SELECT votes FROM articles
-  WHERE article_id = $1`,
-      [articleId]
+      `UPDATE articles
+      SET votes = votes + $1
+      WHERE article_id = $2
+      RETURNING *`,
+      [newVotes, articleId]
     )
     .then(({ rows }) => {
       if (!rows.length) {
@@ -127,19 +130,6 @@ const selectArticleVotes = (articleId) => {
       return rows[0];
     });
 };
-const updateArticleVotes = (updatedVotes, articleId) => {
-  return db
-    .query(
-      `UPDATE articles
-      SET votes = $1
-      WHERE article_id = $2
-      RETURNING *`,
-      [updatedVotes, articleId]
-    )
-    .then(({ rows }) => {
-      return rows[0];
-    });
-};
 
 module.exports = {
   selectArticles,
@@ -147,6 +137,5 @@ module.exports = {
   selectArticleComments,
   checkUserExists,
   createComment,
-  selectArticleVotes,
   updateArticleVotes,
 };
