@@ -47,6 +47,23 @@ const selectArticles = (
   });
 };
 
+const checkTopicExists = (topic) => {
+  return db
+  .query(
+    `SELECT * FROM topics
+    WHERE slug = $1`, [topic]
+  )
+  .then(({rows}) => {
+    if (!rows.length) {
+      return Promise.reject({
+        status: 404,
+        msg: "Topic not found",
+      });
+    }
+    return rows[0];
+  });
+}
+
 const selectArticlesById = (articleId) => {
   return db
     .query(
@@ -133,6 +150,7 @@ const updateArticleVotes = (newVotes, articleId) => {
 
 module.exports = {
   selectArticles,
+  checkTopicExists,
   selectArticlesById,
   selectArticleComments,
   checkUserExists,

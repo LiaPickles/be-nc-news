@@ -1,5 +1,7 @@
+const { sort } = require("../db/data/test-data/articles");
 const {
   selectArticles,
+  checkTopicExists,
   selectArticlesById,
   selectArticleComments,
   checkUserExists,
@@ -11,17 +13,32 @@ const getArticles = (req, res, next) => {
   const topicQuery = req.query.topics;
   const sortBy = req.query.sort_by;
   const orderBy = req.query.order;
-  selectArticles(topicQuery, sortBy, orderBy)
-    .then((articles) => {
-      if (!articles.length) {
-        return res.status(404).send({ msg: "Topic not found" });
-      } else {
+
+  if (topicQuery) {
+    checkTopicExists(topicQuery)
+      .then((topics) => {
+        return selectArticles(topicQuery, sortBy, orderBy);
+      })
+      .then((articles) => {
+        if (articles.length === 0) {
+          return res
+            .status(200)
+            .send({ msg: "No articles found for this topic" });
+        }
         return res.status(200).send({ articles });
-      }
-    })
-    .catch((err) => {
-      next(err);
-    });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
+    selectArticles(topicQuery, sortBy, orderBy)
+      .then((articles) => {
+        return res.status(200).send({ articles });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 };
 
 const getArticlesById = (req, res, next) => {
@@ -79,14 +96,13 @@ const patchArticleVotes = (req, res, next) => {
   const articleId = req.params.article_id;
   const newVotes = req.body.inc_votes;
   updateArticleVotes(newVotes, articleId)
-  .then((article) => {
-    return res.status(200).send({ article });
-  })
-  .catch((err) => {
-    next(err);
-  });
+    .then((article) => {
+      return res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
-
 
 module.exports = {
   getArticles,

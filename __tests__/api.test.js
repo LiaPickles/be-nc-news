@@ -102,7 +102,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/3")
       .expect(200)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.article).toMatchObject({
           author: expect.any(String),
           title: expect.any(String),
@@ -119,7 +119,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/333")
       .expect(404)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("Not found");
       });
   });
@@ -127,7 +127,7 @@ describe("GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/0L")
       .expect(400)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
       });
   });
@@ -191,7 +191,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/333/comments")
       .expect(404)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("Not found");
       });
   });
@@ -199,7 +199,7 @@ describe("GET /api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/0L/comments")
       .expect(400)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
       });
   });
@@ -336,6 +336,14 @@ describe("PATCH 200, /api/articles/:article_id", () => {
           body.articles.forEach((article) => {
             expect(article.topic).toBe("mitch");
           });
+        });
+    });
+    test("GET 200: responds with an empty array when given a valid topic with no articles currently", () => {
+      return request(app)
+        .get("/api/articles?topics=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.msg).toBe("No articles found for this topic");
         });
     });
     test("GET 404: responds with correct error message when incorrect topic is queried", () => {
