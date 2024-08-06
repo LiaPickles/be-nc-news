@@ -273,8 +273,8 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
-describe("PATCH 200, /api/articles/:article_id", () => {
-  test("when given appropriate votes object, will respond with updated article", () => {
+describe("PATCH, /api/articles/:article_id", () => {
+  test("PATCH 200: when given appropriate votes object, will respond with updated article", () => {
     const votes = { inc_votes: 5 };
 
     return request(app)
@@ -315,7 +315,7 @@ describe("PATCH 200, /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("PATCH 404: will return correct error message when given invalid article id", () => {
+  test("PATCH 404: will return correct error message when given valid but non-existent article id", () => {
     const votes = { inc_votes: 7 };
     return request(app)
       .patch("/api/articles/999")
@@ -374,7 +374,7 @@ describe("PATCH 200, /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("DELETE 404: will return correct error message if given invalid comment id", () => {
+  test("DELETE 404: will return correct error message if given valid but non-existent comment id", () => {
     return request(app)
       .delete("/api/comments/999")
       .expect(404)
@@ -412,16 +412,86 @@ describe("GET /api/users/:username", () => {
           username: "butter_bridge",
           name: "jonny",
           avatar_url:
-            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
         });
       });
   });
   test("GET 404: responds with suitable error message when given a username that doesn't exist", () => {
     return request(app)
-    .get("/api/users/monty123")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe("User not found")
-    })
-  })
+      .get("/api/users/monty123")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("PATCH 200: when given appropriate positive votes object, will respond with the updated comment", () => {
+    const votes = { inc_votes: 1 };
+
+    return request(app)
+      .patch("/api/comments/3")
+      .send(votes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment).toEqual({
+          comment_id: 3,
+          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          article_id: 1,
+          author: "icellusedkars",
+          votes: 101,
+          created_at: "2020-03-01T01:13:00.000Z",
+        });
+      });
+  });
+  test("PATCH 200: when given appropriate negative votes object, will respond with the updated comment", () => {
+    const votes = { inc_votes: -1 };
+
+    return request(app)
+      .patch("/api/comments/3")
+      .send(votes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment).toEqual({
+          comment_id: 3,
+          body: "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          article_id: 1,
+          author: "icellusedkars",
+          votes: 99,
+          created_at: "2020-03-01T01:13:00.000Z",
+        });
+      });
+  });
+  test("PATCH 400: will return correct error message when given invalid votes object", () => {
+    const votes = { inc_votes: "X" };
+
+    return request(app)
+      .patch("/api/comments/2")
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH 400: will return correct error message when given invalid article id", () => {
+    const votes = { inc_votes: 7 };
+    return request(app)
+      .patch("/api/comments/XX")
+      .send(votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("PATCH 404: will return correct error message when given valid but non-existent article id", () => {
+    const votes = { inc_votes: 7 };
+    return request(app)
+      .patch("/api/comments/999")
+      .send(votes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment not found");
+      });
+  });
 });
