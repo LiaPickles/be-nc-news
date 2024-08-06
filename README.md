@@ -12,12 +12,15 @@ https://nc-news-a5kg.onrender.com/api
 NC News is a news aggregation application where users can:
 
 * View a list of articles.
+* View a list of article topics. 
 * Filter articles by topic.
-* Sort articles by date, votes, and comments.
+* Sort articles by date, votes, and comments (both ascending and descending).
 * View individual article details.
 * Comment on articles.
 * Vote on articles and comments.
 * Delete their own comments.
+* View a list of current users of the application, as well as an individual user's information.
+* Post a new article to the site.
 
 
 
