@@ -7,6 +7,7 @@ const {
   getArticleComments,
   postArticleComment,
   patchArticleVotes,
+  postArticle
 } = require("./controllers/articles.controller");
 const { deleteCommentById, patchCommentVotes } = require("./controllers/comments.controller");
 const { getUsers, getSingleUser } = require("./controllers/users.controller");
@@ -23,6 +24,8 @@ app.get("/api/topics", getTopics);
 app.get("/api", getEndpointData);
 
 app.get("/api/articles", getArticles);
+
+app.post("/api/articles", postArticle)
 
 app.get("/api/articles/:article_id", getArticlesById);
 
@@ -42,6 +45,9 @@ app.get("/api/users/:username", getSingleUser)
 
 app.use((err, req, res, next) => {
   if (err.code) {
+    if (err.code === "23503"){
+      res.status(400).send({ msg: "Topic does not exist"})
+    }
     if (err.code === "22P02") {
       res.status(400).send({ msg: "Bad request" });
     } else {

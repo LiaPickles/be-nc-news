@@ -49,20 +49,21 @@ const selectArticles = (
 
 const checkTopicExists = (topic) => {
   return db
-  .query(
-    `SELECT * FROM topics
-    WHERE slug = $1`, [topic]
-  )
-  .then(({rows}) => {
-    if (!rows.length) {
-      return Promise.reject({
-        status: 404,
-        msg: "Topic not found",
-      });
-    }
-    return rows[0];
-  });
-}
+    .query(
+      `SELECT * FROM topics
+    WHERE slug = $1`,
+      [topic]
+    )
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({
+          status: 404,
+          msg: "Topic not found",
+        });
+      }
+      return rows[0];
+    });
+};
 
 const selectArticlesById = (articleId) => {
   return db
@@ -148,6 +149,19 @@ const updateArticleVotes = (newVotes, articleId) => {
     });
 };
 
+const addNewArticle = (title, topic, author, body) => {
+  return db
+    .query(
+      `INSERT INTO articles (title, topic, author, body)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *`,
+      [title, topic, author, body]
+    )
+    .then(({ rows }) => {
+      return rows[0].article_id;
+    });
+};
+
 module.exports = {
   selectArticles,
   checkTopicExists,
@@ -156,4 +170,5 @@ module.exports = {
   checkUserExists,
   createComment,
   updateArticleVotes,
+  addNewArticle,
 };
