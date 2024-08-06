@@ -7,7 +7,9 @@ const {
   checkUserExists,
   createComment,
   updateArticleVotes,
+  addNewArticle,
 } = require("../models/articles.model");
+const { selectSingleUser } = require("../models/users.model");
 
 const getArticles = (req, res, next) => {
   const topicQuery = req.query.topics;
@@ -104,10 +106,33 @@ const patchArticleVotes = (req, res, next) => {
     });
 };
 
+const postArticle = (req, res, next) => {
+  const { title, topic, author, body } = req.body;
+
+  if (!title || !topic || !author || !body) {
+    return res.status(400).send({ msg: "Missing article field" });
+  }
+
+  selectSingleUser(author)
+    .then((user) => {
+      return addNewArticle(title, topic, author, body);
+    })
+    .then((article_id) => {
+      return selectArticlesById(article_id);
+    })
+    .then((article) => {
+      res.status(201).send({ article });
+    })
+    .catch((err) => {
+        next(err);
+    });
+};
+
 module.exports = {
   getArticles,
   getArticlesById,
   getArticleComments,
   postArticleComment,
   patchArticleVotes,
+  postArticle,
 };

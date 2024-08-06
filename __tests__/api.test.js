@@ -152,6 +152,80 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
+describe("POST /api/articles", () => {
+  test("POST 201: when given correct article object, responds with new article object", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "My top ten summer recipes",
+      body: "1. Mango chicken skewers, 2. Halloumi burgers, 3. Ceaser salad, 4. The best bruscetta, 5. Persian orange and cinamon rice salad, 6. Curried tofu skewers, 7. Prawn and pineapple tacos, 8. Eton mess, 9. Quick pad thai, 10. Spicy mexican bean burgers",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article).toMatchObject({
+          author: "butter_bridge",
+          title: "My top ten summer recipes",
+          body: "1. Mango chicken skewers, 2. Halloumi burgers, 3. Ceaser salad, 4. The best bruscetta, 5. Persian orange and cinamon rice salad, 6. Curried tofu skewers, 7. Prawn and pineapple tacos, 8. Eton mess, 9. Quick pad thai, 10. Spicy mexican bean burgers",
+          topic: "mitch",
+          article_img_url: expect.any(String),
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: "0",
+        });
+      });
+  });
+  test("POST 400: when any of the required article fields are missing, will respond with correct error message", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "My top ten summer recipes",
+      body: "",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing article field");
+      });
+  });
+  test("POST 404: when a non existing username is given, will respond with correct error message", () => {
+    const newArticle = {
+      author: "monty123",
+      title: "The cats I hate the most",
+      body: "Sammy, Peter, Smudge, Harriet",
+      topic: 'cats'
+    }
+    return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("User not found")
+    })
+  })
+  test("POST 404: when a non exisiting topic is given, will respond with the correct error message", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "My favourite meal",
+      body: "A huge roast dinner",
+      topic: "food"
+    }
+    return request(app)
+    .post("/api/articles")
+    .send(newArticle)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Topic does not exist")
+
+    })
+  })
+});
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("GET 200: responds with array of comments for given article", () => {
     return request(app)
@@ -258,7 +332,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("POST 404: when given an invalid article_id will respond with correct error message", () => {
+  test("POST 404: when given a valid but non existtent article_id will respond with correct error message", () => {
     const newComment = {
       username: "butter_bridge",
       body: "great article!",
