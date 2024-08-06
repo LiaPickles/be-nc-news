@@ -79,6 +79,18 @@
     "queries": [],
     "exampleResponse": {}
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates the votes on a comment when given the comment ID",
+    "queries": [],
+    "exampleResponse": {
+      "comment_id": 3,
+      "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+      "article_id": 1,
+      "author": "icellusedkars",
+      "votes": 99,
+      "created_at": "2020-03-01T01:13:00.000Z"
+    }
+  },
   "GET /api/users": {
     "description": "serves an array user objects",
     "queries": ["sort_by", "order"],
