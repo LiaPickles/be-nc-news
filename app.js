@@ -9,7 +9,7 @@ const {
   patchArticleVotes,
 } = require("./controllers/articles.controller");
 const { deleteCommentById } = require("./controllers/comments.controller");
-const { getUsers } = require("./controllers/users.controller");
+const { getUsers, getSingleUser } = require("./controllers/users.controller");
 
 
 const express = require("express");
@@ -35,6 +35,8 @@ app.patch("/api/articles/:article_id", patchArticleVotes);
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.get("/api/users", getUsers);
+
+app.get("/api/users/:username", getSingleUser)
 
 app.use((err, req, res, next) => {
   if (err.code) {
