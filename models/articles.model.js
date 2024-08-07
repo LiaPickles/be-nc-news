@@ -47,24 +47,6 @@ const selectArticles = (
   });
 };
 
-const checkTopicExists = (topic) => {
-  return db
-    .query(
-      `SELECT * FROM topics
-    WHERE slug = $1`,
-      [topic]
-    )
-    .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({
-          status: 404,
-          msg: "Topic not found",
-        });
-      }
-      return rows[0];
-    });
-};
-
 const selectArticlesById = (articleId) => {
   return db
     .query(
@@ -84,48 +66,6 @@ const selectArticlesById = (articleId) => {
         });
       }
       return rows[0];
-    });
-};
-
-const selectArticleComments = (articleId) => {
-  return db
-    .query(
-      `SELECT comment_id,votes, created_at, author, body, article_id 
-      FROM comments
-      WHERE article_id = $1
-      ORDER BY created_at DESC`,
-      [articleId]
-    )
-    .then((result) => {
-      return result.rows;
-    });
-};
-
-const checkUserExists = (username) => {
-  return db
-    .query(`SELECT * FROM users WHERE username = $1`, [username])
-    .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({
-          status: 404,
-          msg: "Not found",
-        });
-      }
-      return rows[0];
-    });
-};
-
-const createComment = (articleId, commentObj) => {
-  const { username, body } = commentObj;
-  return db
-    .query(
-      `INSERT INTO comments (body, article_id, author)
-      VALUES ($1, $2, $3)
-      RETURNING body`,
-      [body, articleId, username]
-    )
-    .then((result) => {
-      return result.rows[0].body;
     });
 };
 
@@ -164,11 +104,7 @@ const addNewArticle = (title, topic, author, body) => {
 
 module.exports = {
   selectArticles,
-  checkTopicExists,
   selectArticlesById,
-  selectArticleComments,
-  checkUserExists,
-  createComment,
   updateArticleVotes,
   addNewArticle,
 };

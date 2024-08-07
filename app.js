@@ -1,17 +1,19 @@
-const cors = require('cors');
+const cors = require("cors");
 const { getTopics } = require("./controllers/topics.controller");
 const { getEndpointData } = require("./controllers/api.controller");
 const {
   getArticles,
   getArticlesById,
+  patchArticleVotes,
+  postArticle,
+} = require("./controllers/articles.controller");
+const {
   getArticleComments,
   postArticleComment,
-  patchArticleVotes,
-  postArticle
-} = require("./controllers/articles.controller");
-const { deleteCommentById, patchCommentVotes } = require("./controllers/comments.controller");
+  deleteCommentById,
+  patchCommentVotes,
+} = require("./controllers/comments.controller");
 const { getUsers, getSingleUser } = require("./controllers/users.controller");
-
 
 const express = require("express");
 const app = express();
@@ -25,7 +27,7 @@ app.get("/api", getEndpointData);
 
 app.get("/api/articles", getArticles);
 
-app.post("/api/articles", postArticle)
+app.post("/api/articles", postArticle);
 
 app.get("/api/articles/:article_id", getArticlesById);
 
@@ -37,16 +39,16 @@ app.patch("/api/articles/:article_id", patchArticleVotes);
 
 app.delete("/api/comments/:comment_id", deleteCommentById);
 
-app.patch("/api/comments/:comment_id", patchCommentVotes)
+app.patch("/api/comments/:comment_id", patchCommentVotes);
 
 app.get("/api/users", getUsers);
 
-app.get("/api/users/:username", getSingleUser)
+app.get("/api/users/:username", getSingleUser);
 
 app.use((err, req, res, next) => {
   if (err.code) {
-    if (err.code === "23503"){
-      res.status(400).send({ msg: "Topic does not exist"})
+    if (err.code === "23503") {
+      res.status(400).send({ msg: "Topic does not exist" });
     }
     if (err.code === "22P02") {
       res.status(400).send({ msg: "Bad request" });
