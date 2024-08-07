@@ -1,15 +1,12 @@
 const { sort } = require("../db/data/test-data/articles");
 const {
   selectArticles,
-  checkTopicExists,
   selectArticlesById,
-  selectArticleComments,
-  checkUserExists,
-  createComment,
   updateArticleVotes,
   addNewArticle,
 } = require("../models/articles.model");
 const { selectSingleUser } = require("../models/users.model");
+const { checkTopicExists } = require("../models/topics.model");
 
 const getArticles = (req, res, next) => {
   const topicQuery = req.query.topics;
@@ -54,46 +51,6 @@ const getArticlesById = (req, res, next) => {
     });
 };
 
-const getArticleComments = (req, res, next) => {
-  const articleId = req.params.article_id;
-  const promises = [selectArticleComments(articleId)];
-  {
-    promises.push(selectArticlesById(articleId));
-  }
-
-  Promise.all(promises)
-    .then((resolvedPromises) => {
-      res.status(200).send({ comments: resolvedPromises[0] });
-    })
-    .catch((err) => {
-      next(err);
-    });
-};
-
-const postArticleComment = (req, res, next) => {
-  const articleId = req.params.article_id;
-  const username = req.body.username;
-  const commentObj = req.body;
-  const commentBody = req.body.body;
-  if (commentBody) {
-    checkUserExists(username)
-      .then(() => {
-        return selectArticlesById(articleId);
-      })
-      .then(() => {
-        return createComment(articleId, commentObj);
-      })
-      .then((comment) => {
-        return res.status(201).send({ comment });
-      })
-      .catch((err) => {
-        next(err);
-      });
-  } else {
-    res.status(400).send({ msg: "No comment given" });
-  }
-};
-
 const patchArticleVotes = (req, res, next) => {
   const articleId = req.params.article_id;
   const newVotes = req.body.inc_votes;
@@ -124,15 +81,13 @@ const postArticle = (req, res, next) => {
       res.status(201).send({ article });
     })
     .catch((err) => {
-        next(err);
+      next(err);
     });
 };
 
 module.exports = {
   getArticles,
   getArticlesById,
-  getArticleComments,
-  postArticleComment,
   patchArticleVotes,
   postArticle,
 };

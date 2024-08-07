@@ -198,32 +198,31 @@ describe("POST /api/articles", () => {
       author: "monty123",
       title: "The cats I hate the most",
       body: "Sammy, Peter, Smudge, Harriet",
-      topic: 'cats'
-    }
+      topic: "cats",
+    };
     return request(app)
-    .post("/api/articles")
-    .send(newArticle)
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe("User not found")
-    })
-  })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
   test("POST 404: when a non exisiting topic is given, will respond with the correct error message", () => {
     const newArticle = {
       author: "butter_bridge",
       title: "My favourite meal",
       body: "A huge roast dinner",
-      topic: "food"
-    }
+      topic: "food",
+    };
     return request(app)
-    .post("/api/articles")
-    .send(newArticle)
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("Topic does not exist")
-
-    })
-  })
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Topic does not exist");
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -316,7 +315,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
+        expect(body.msg).toBe("User not found");
       });
   });
   test("POST 400: when given an invalid article_id will respond with correct error message", () => {
